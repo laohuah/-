@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { GET, POST, PUT } from 'src/contants';
+import { GET, POST, PUT } from '../constants';
 import { messageHandle } from './tools';
 
 const codeMessage = {
@@ -45,3 +45,68 @@ const getCookie = (name) => {
   const r = document.cookie.match(`\\b${name}=([^;]*)\\b`);
   return r ? r[1] : undefined;
 };
+
+class Request {
+  constructor(baseUrl) {
+    this.config = {
+      url: baseUrl,
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    }
+    this.xsrf = getCookie('XSRF-TOKEN'); // XSRF token鉴权
+    if (this.xsrf) {
+      this.config.headers['X-XSRF-TOKEN'] = this.xsrf;
+    }
+  }
+
+  http = (url, method, params, isForm = false, header) => {
+    const requestConfig = {
+      ...this.config,
+      url: this.config.url + url,
+      method: method || GET,
+    }
+    // 是否增加额外的请求头
+    if (header) {
+      requestConfig.headers = {
+        ...this.config.headers,
+        ...header
+      }
+    }
+    // 判断是否FromData类型
+    if (isForm) {
+      const formData = new FormData();
+      requestConfig.headers = {
+        'Content-Type': 'multipart/form-data',
+      };
+      Object.keys(params).forEach(key => {
+        if (/(\[\])$/.test(key)) {
+          params[key].forEach(file => {
+            formData.append(key, file);
+          });
+        } else {
+          formData.append(key, params[key]);
+        }
+      });
+      if (this.xsrf) {
+        requestConfig.headers['X-XSRF-TOKEN'] = this.xsrf;
+      }
+      requestConfig.data = formData;
+    } else if (method === POST || method === PUT) {
+      requestConfig.data = params;
+    } else {
+      requestConfig.data = params;
+    }
+
+    return axios(requestConfig)
+      .then(res => {
+        // 可以自行做业务逻辑处理
+        return res.data;
+      }).catch(error => {
+        return errorHandler(error.response);
+      })
+  }
+}
+
+let baseUrl = '';
+export default new Request(baseUrl).http;

@@ -4,7 +4,7 @@ export default {
   'GET /classes/stu': mockjs.mock({
     code: 200,
     message: 'success',
-    'data|1-100': [
+    'data|1-1000': [
       {
         name: '@cname',
         age: '@integer(15,20)',
