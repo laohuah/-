@@ -1,0 +1,41 @@
+.stu-container {
+  padding: 20px;
+  :global {
+    .ant-table-thead
+      > tr
+      > th:not(:last-child):not(.ant-table-selection-column):not(.ant-table-row-expand-icon-cell):not([colspan])::before {
+      width: 0;
+    }
+    .ant-table-thead > tr > th {
+      font-family:  PingFangSC;
+      font-weight: 400;
+      font-size: 18px;
+      color: #FFFFFF;
+      background: #2A77FF;
+    }
+    .ant-table-cell {
+      color: #2a3b57;
+      font-size: 16px;
+    }
+    .ant-table-tbody {
+      > tr {
+        &:nth-child(odd) {
+          background-color: #f9fbfd;
+
+          &:hover > td {
+            background-color: #f9fbfd;
+          }
+        }
+
+        &:nth-child(even) {
+          background-color: #e0ebff;
+
+          &:hover > td {
+            // padding: 11px 16px;
+            background-color: #e0ebff;
+          }
+        }
+      }
+    }
+  }
+}
